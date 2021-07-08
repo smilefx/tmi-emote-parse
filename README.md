@@ -10,6 +10,12 @@ Load and parse Twitch, BTTV and FFZ emotes and badges from messages for multiple
   - [Without tmi.js](#without-tmijs)
   - [With tmi.js](#with-tmijs)
 - [Documentation](#documentation)
+  - [emoteParser.loadAssets()](#emoteparserloadassets)
+  - [emoteParser.getLoaded()](#emoteparsergetloaded)
+  - [emoteParser.getAllBadges()](#emoteparsergetallbadges)
+  - [emoteParser.getAllEmotes()](#emoteparsergetallemotes)
+  - [emoteParser.getBades()](#emoteparsergetbadges)
+  - [emoteParser.replaceEmotes()](#emoteparserreplaceemotes)
 
 ## Installation
 Install using npm:
@@ -24,8 +30,8 @@ npm install tmi-emote-parse
 const emoteParser = require("tmi-emote-parse");
 
 // 🟦 Load emotes and badges for a specific channel to later use
-emoteParser.loadEmotes("twitch");
-emoteParser.loadEmotes("twitchdev");
+emoteParser.loadAssets("twitch");
+emoteParser.loadAssets("twitchdev");
 
 emoteParser.events.on("emotes", (event) => {
 
@@ -59,7 +65,8 @@ emoteParser.events.on("badges", (event) => {
 // 🟦 Require the Module
 const emoteParser = require("tmi-emote-parse");
 
-// 🅾 The following part is the tmi.js integration (Documentation can be found here: https://github.com/tmijs/tmi.js)
+// 🅾 The following part is the tmi.js integration
+// (Documentation can be found here: https://github.com/tmijs/tmi.js)
 const tmi = require("tmi.js");
 
 client = new tmi.Client({
@@ -79,18 +86,18 @@ client = new tmi.Client({
 client.connect().catch(console.error);
 
 // 🅾 tmi.js message event handler (as of tmi.js v1.4.2)
-client.on('message', (channel, tags, message, self) => {
+client.on('message', (channel, userstate, message, self) => {
 
     // 🟦 Use the tmi-emote-parse module here
     // Replace Emotes with HTML in a given message for a specific channel
-    console.log(emoteParser.replaceEmotes(message, tags, channel));
+    console.log(emoteParser.replaceEmotes(channel, userstate, message, self));
     /* 
         -> message: 'I can see you ariW' 
         -> output:  'I can see you <img class="message-emote" src="https://cdn.betterttv.net/emote/56fa09f18eff3b595e93ac26/3x"/>'
     */
     
     // Return the badges the message author uses on a specific channel
-    console.log(emoteParser.getBadges(tags, channel));
+    console.log(emoteParser.getBadges(userstate, channel));
     /* 
         [{
           name: 'premium/1',
@@ -101,8 +108,102 @@ client.on('message', (channel, tags, message, self) => {
 });
 
 // 🟦 Load emotes and badges for a specific channel to later parse/use
-emoteParser.loadEmotes("twitch");
-emoteParser.loadEmotes("twitchdev");
+emoteParser.loadAssets("twitch");
+emoteParser.loadAssets("twitchdev");
 ```
 
 ## Documentation
+### emoteParser.loadAssets()
+Load Emotes and Badges of a specific Twitch channel. _(Void)_
+
+**Parameters:**
+- `channel`: _String_ - Channel name
+```js
+emoteParser.loadAssets("twitch");
+```
+
+### emoteParser.getLoaded()
+Check the loaded status of all or a specific channel. _(Object)_
+
+**Parameters:**
+- `channel`: _String_ - Channel name (optional)
+```js
+console.log(emoteParser.getLoaded("twitch"));
+```
+Returns something like this:
+```js
+{
+  "twitch": { channel: 'twitch', emotes: true, badges: true }
+}
+```
+
+### emoteParser.getAllBadges()
+Return all badges present in the chat for a specific channel. _(Array)_
+
+**Parameters:**
+- `channel`: _String_ - Channel name
+```js
+console.log(emoteParser.getAllBadges("twitch"));
+```
+Returns something like this:
+```js
+[{
+  name: 'bits/1000',
+  info: 'cheer 1000',
+  img: 'https://static-cdn.jtvnw.net/badges/v1/0d85a29e-79ad-4c63-a285-3acd2c66f2ba/3'
+}, ...]
+```
+
+### emoteParser.getAllEmotes()
+Return all BTTV & FFZ emotes present in the chat for a specific channel. _(Array)_
+
+**Parameters:**
+- `channel`: _String_ - Channel name
+```js
+console.log(emoteParser.getAllEmotes("twitch"));
+```
+Returns something like this:
+```js
+[{
+  name: 'ariW',
+  type: 'bttv',
+  img: 'https://cdn.betterttv.net/emote/56fa09f18eff3b595e93ac26/3x'
+}, ...]
+```
+
+### emoteParser.getBadges()
+⚠ tmi.js only: Return all badges a message author uses for a specific channel. _(Array)_
+
+**Parameters:**
+- `userstate`: _Object_ - Twitch userstate object (tmi.js)
+  - `userstate["badges-raw"]`: _String_ - User badges
+  - `...`
+- `channel`: _String_ - Channel name
+```js
+console.log(emoteParser.getBadges(userstate, "twitch"));
+```
+Returns something like this:
+```js
+[{
+  name: 'bits/1000',
+  info: 'cheer 1000',
+  img: 'https://static-cdn.jtvnw.net/badges/v1/0d85a29e-79ad-4c63-a285-3acd2c66f2ba/3'
+}, ...]
+```
+
+### emoteParser.replaceEmotes()
+⚠ tmi.js only: Parses all legacy Twitch, BTTV and FFZ emotes to HTML in the message for a specific channel. _(String)_
+
+**Parameters:**
+- `message`: _String_ - Chat message
+- `userstate`: _Object_ - Twitch userstate object (tmi.js)
+  - `userstate["emotes"]`: _Object_ - Used emotes in message
+  - `...`
+- `channel`: _String_ - Channel name
+```js
+console.log(emoteParser.replaceEmotes("I can see you ariW", userstate, "twitch"));
+```
+Returns something like this:
+```js
+'I can see you <img class="message-emote" src="https://cdn.betterttv.net/emote/56fa09f18eff3b595e93ac26/3x"/>'
+```

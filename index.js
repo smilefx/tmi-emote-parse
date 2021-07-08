@@ -338,4 +338,48 @@ exports.getBadges = function (tags, channel) {
     return getBadges(tags, channel.replace("#", "").trim().toLowerCase());
 }
 
+exports.getAllBadges = function (channel) {
+    channel = channel.replace("#", "").trim().toLowerCase();
+    if(loadedAssets[channel] != undefined && loadedAssets[channel].badgesLoaded[2]) {
+        var allBadges = [];
+        Object.keys(loadedAssets[channel].badges).forEach(el => {
+            var ele = loadedAssets[channel].badges[el];
+            allBadges.push(ele);
+        })
+        return allBadges;
+    } else {
+        return [];
+    }
+}
+
+exports.getAllEmotes = function (channel) {
+    channel = channel.replace("#", "").trim().toLowerCase();
+    if(loadedAssets[channel] != undefined && loadedAssets[channel].loaded[4]) {
+        var allEmotes = [];
+        loadedAssets[channel].emotes.forEach(ele => {
+            if (ele.type == "bttv") {
+                var obj = {
+                    name: ele.code,
+                    type: "bttv",
+                    img: `https://cdn.betterttv.net/emote/${ele.id}/3x`
+                };
+                allEmotes.push(obj);
+            } else if (ele.type == "ffz") {
+                var poss = ele.urls[4] != undefined ? ele.urls[4] : ele.urls[2] != undefined ? ele.urls[2] : ele.urls[1];
+                var obj = {
+                    name: ele.code,
+                    type: "ffz",
+                    img: `https:${poss}`
+                };
+                allEmotes.push(obj);
+            }
+        })
+        allEmotes.sort(compareEnd);
+        // allEmotes = allEmotes.reverse();
+        return allEmotes;
+    } else {
+        return [];
+    }
+}
+
 exports.events = new ParseEmitter();

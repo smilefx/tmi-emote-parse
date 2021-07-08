@@ -294,7 +294,7 @@ function getBadges(tags, channel) {
     return badges;
 }
 
-exports.loadEmotes = function (channel) {
+exports.loadAssets = function (channel) {
     loadAssets(channel.replace("#", "").trim().toLowerCase());
 }
 

@@ -148,10 +148,12 @@ function loadConcurrent(uid, channel) {
             try {
                 Object.keys(body.badge_sets).forEach((ele, ind) => {
                     Object.keys(body.badge_sets[ele].versions).forEach((el, i) => {
-                        loadedAssets[channel].badges[ele + "/" + el] = {
-                            name: ele + "/" + el,
-                            info: body.badge_sets[ele].versions[el].title,
-                            img: body.badge_sets[ele].versions[el].image_url_4x
+                        if(loadedAssets[channel].badges[ele + "/" + el] == undefined) {
+                            loadedAssets[channel].badges[ele + "/" + el] = {
+                                name: ele + "/" + el,
+                                info: body.badge_sets[ele].versions[el].title,
+                                img: body.badge_sets[ele].versions[el].image_url_4x
+                            }
                         }
                     })
                 })

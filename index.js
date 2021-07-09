@@ -16,11 +16,28 @@ function loadAssets(channel) {
         loaded: [false, false, false, false, false]
     }
 
+    fetch(`https://dadoschyt.de/api/tmt/user/${channel}`)
+        .then(response => response.json())
+        .then(body => {
+            console.log(body);
+            try {
+                var uid = body.users[0]._id;
+                loadedAssets[channel].uid = uid;
+                loadConcurrent(uid, channel);
+                
+            } catch (error) {
+                exports.events.emit('error', {channel: channel, error: "Failed to load user information for " + channel});
+            }
+        });
+}
+
+function loadConcurrent(uid, channel) {
+
     fetch(`https://api.frankerfacez.com/v1/room/${channel}`)
         .then(response => response.json())
         .then(body => {
+            console.log(body);
             try {
-                var uid = body.room.twitch_id;
                 Object.keys(body.sets).forEach(el => {
                     var e = body.sets[el];
 
@@ -40,16 +57,10 @@ function loadAssets(channel) {
                         exports.events.emit('loaded', {channel: channel});
                     }
                 }
-
-                loadedAssets[channel].uid = uid;
-                loadConcurrent(uid, channel);
             } catch (error) {
                 exports.events.emit('error', {channel: channel, error: "Failed to load FFZ channel emotes for " + channel});
             }
         });
-}
-
-function loadConcurrent(uid, channel) {
 
     fetch(`https://api.betterttv.net/3/cached/users/twitch/${uid}`)
         .then(response => response.json())
@@ -340,7 +351,7 @@ exports.getBadges = function (tags, channel) {
 
 exports.getAllBadges = function (channel) {
     channel = channel.replace("#", "").trim().toLowerCase();
-    if(loadedAssets[channel] != undefined && loadedAssets[channel].badgesLoaded[2]) {
+    if(loadedAssets[channel] != undefined) {
         var allBadges = [];
         Object.keys(loadedAssets[channel].badges).forEach(el => {
             var ele = loadedAssets[channel].badges[el];
@@ -354,7 +365,7 @@ exports.getAllBadges = function (channel) {
 
 exports.getAllEmotes = function (channel) {
     channel = channel.replace("#", "").trim().toLowerCase();
-    if(loadedAssets[channel] != undefined && loadedAssets[channel].loaded[4]) {
+    if(loadedAssets[channel] != undefined) {
         var allEmotes = [];
         loadedAssets[channel].emotes.forEach(ele => {
             if (ele.type == "bttv") {

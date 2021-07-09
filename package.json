@@ -1,6 +1,6 @@
 {
   "name": "tmi-emote-parse",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Chat parser for legacy Twitch, BTTV and FFZ emotes aswell as badges using TMI.js",
   "main": "index.js",
   "scripts": {

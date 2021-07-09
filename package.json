@@ -1,12 +1,23 @@
 {
   "name": "tmi-emote-parse",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Chat parser for legacy Twitch, BTTV and FFZ emotes aswell as badges using TMI.js",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["twitch", "tmi", "irc", "emote", "emoji", "badge", "bttv", "ffz", "chat", "parse"],
+  "keywords": [
+    "twitch",
+    "tmi",
+    "irc",
+    "emote",
+    "emoji",
+    "badge",
+    "bttv",
+    "ffz",
+    "chat",
+    "parse"
+  ],
   "author": "SmileFX",
   "license": "ISC",
   "bugs": {

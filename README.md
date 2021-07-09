@@ -3,25 +3,38 @@ Load and parse Twitch, BTTV and FFZ emotes and badges from messages for multiple
 
 ⚠ This module is mainly designed to be integrated in a https://github.com/tmijs/tmi.js environment but can also be used as a standalone with limited features.
 
+<br>
+
 ## Table of Contents
 
 - [Installation](#installation)
 - [Usage](#usage)
   - [Without tmi.js](#without-tmijs)
-  - [With tmi.js](#with-tmijs)
+  - [With tmi.js (Recommended)](#with-tmijs)
 - [Documentation](#documentation)
-  - [emoteParser.loadAssets()](#emoteparserloadassets)
-  - [emoteParser.getLoaded()](#emoteparsergetloaded)
-  - [emoteParser.getAllBadges()](#emoteparsergetallbadges)
-  - [emoteParser.getAllEmotes()](#emoteparsergetallemotes)
-  - [emoteParser.getBades()](#emoteparsergetbadges)
-  - [emoteParser.replaceEmotes()](#emoteparserreplaceemotes)
+  - [Functions](#functions)
+    - [emoteParser.loadAssets()](emoteparserloadassets)
+    - [emoteParser.getLoaded()](#emoteparsergetloaded)
+    - [emoteParser.getAllBadges()](#emoteparsergetallbadges)
+    - [emoteParser.getAllEmotes()](#emoteparsergetallemotes)
+    - [emoteParser.getBades()](#emoteparsergetbadges)
+    - [emoteParser.replaceEmotes()](#emoteparserreplaceemotes)
+  - [Events](#events)
+    - [Emotes](#emotes)
+    - [Badges](#badges)
+    - [Loaded](#loaded)
+    - [Error](#error)
+- [Community](#community)
+  
+<br>
 
 ## Installation
 Install using npm:
 ```bash
 npm install tmi-emote-parse
 ```
+
+<br>
 
 ## Usage
 ### Without tmi.js
@@ -112,7 +125,10 @@ emoteParser.loadAssets("twitch");
 emoteParser.loadAssets("twitchdev");
 ```
 
+<br>
+
 ## Documentation
+### Functions
 ### emoteParser.loadAssets()
 Load Emotes and Badges of a specific Twitch channel. _(Void)_
 
@@ -207,3 +223,79 @@ Returns something like this:
 ```js
 'I can see you <img class="message-emote" src="https://cdn.betterttv.net/emote/56fa09f18eff3b595e93ac26/3x"/>'
 ```
+
+<br>
+
+### Events
+### Emotes
+Event fires after BTTV & FFZ emotes for any channel have finished loading. _(Object)_
+
+**Parameters:**
+- `event`: _Object_ - Event
+  - `event.channel`: _String_ - Channel name
+```js
+emoteParser.events.on("emotes", (event) => {
+  console.log(event);
+})
+```
+Returns something like this:
+```js
+{ channel: 'twitchdev' }
+```
+
+### Badges
+Event fires after Twitch badges for any channel have finished loading. _(Object)_
+
+**Parameters:**
+- `event`: _Object_ - Event
+  - `event.channel`: _String_ - Channel name
+```js
+emoteParser.events.on("badges", (event) => {
+  console.log(event);
+})
+```
+Returns something like this:
+```js
+{ channel: 'twitchdev' }
+```
+
+### Loaded
+Event fires after all badges and emotes for any channel have finished loading. _(Object)_
+
+**Parameters:**
+- `event`: _Object_ - Event
+  - `event.channel`: _String_ - Channel name
+```js
+emoteParser.events.on("loaded", (event) => {
+  console.log(event);
+})
+```
+Returns something like this:
+```js
+{ channel: 'twitchdev' }
+```
+
+### Error
+Event fires if any error on load occurs for any channel. _(Object)_
+
+**Parameters:**
+- `event`: _Object_ - Event
+  - `event.channel`: _String_ - Channel name
+  - `event.error`: _String_ - Error message
+```js
+emoteParser.events.on("error", (event) => {
+  console.log(event);
+})
+```
+Returns something like this:
+```js
+{ channel: 'twitchdev', error: 'Failed to load FFZ global emotes for twitchdev' }
+```
+<br>
+
+## Community
+- Follow [@SmileFXOfficial on Twitter](https://twitter.com/SmileFXOfficial), [SmileFXOfficial on Twitch](https://twitch.tv/SmileFXOfficial).
+- Found a bug: [submit an issue](https://github.com/smilefx/tmi-emote-parse/issues).
+- Discussion and news about tmi-emote-parser: [Join the Discord](https://discord.gg/nV6zP6d4Pq).
+
+## Thanks for using the project! 💜

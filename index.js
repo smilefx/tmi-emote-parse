@@ -19,7 +19,6 @@ function loadAssets(channel) {
     fetch(`https://dadoschyt.de/api/tmt/user/${channel}`)
         .then(response => response.json())
         .then(body => {
-            console.log(body);
             try {
                 var uid = body.users[0]._id;
                 loadedAssets[channel].uid = uid;
@@ -36,7 +35,6 @@ function loadConcurrent(uid, channel) {
     fetch(`https://api.frankerfacez.com/v1/room/${channel}`)
         .then(response => response.json())
         .then(body => {
-            console.log(body);
             try {
                 Object.keys(body.sets).forEach(el => {
                     var e = body.sets[el];

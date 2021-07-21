@@ -270,10 +270,91 @@ function replaceMessage(message, tags, channel) {
     return message;
 }
 
+function getMessageEmotes(message, tags, channel) {
+
+    var emotes = [];
+    var gotEmotes = [];
+    if (tags.emotes != null) {
+        Object.keys(tags.emotes).forEach((el, ind) => {
+            var em = tags.emotes[el];
+            em.forEach(ele => {
+                var start = parseInt(ele.split("-")[0]);
+                var end = parseInt(ele.split("-")[1]);
+                emotes.push({
+                    start: start,
+                    end: end,
+                    rep: Object.keys(tags.emotes)[ind]
+                })
+            })
+        })
+
+        emotes.sort(compareEnd);
+        emotes = emotes.reverse();
+
+        emotes.forEach((ele, ind) => {
+            var code = message.substring(ele.start, ele.end + 1);
+            var found = false;
+            gotEmotes.forEach(el => {
+                if(el.code == code) found = true;
+            })
+            if(!found) gotEmotes.push({code: code, img: `https://static-cdn.jtvnw.net/emoticons/v2/${ele.rep}/default/dark/3.0`, type: "twitch"})
+            message = message.replaceAt(ele.start, ele.end, ele.rep);
+        });
+    }
+
+    var fEmotes = replaceBTTVAll(message, channel);
+    
+    fEmotes.forEach(ele => {
+        var found = false;
+        gotEmotes.forEach(el => {
+            if(el.code == ele.code) found = true;
+        })
+        if(!found) gotEmotes.push(ele)
+    })
+
+    message = message.replace(//gm, "&lt;").replace(//g, "&gt;");
+
+    return gotEmotes;
+}
+
 String.prototype.replaceAt = function (start, end, replacement) {
     var cur = this.substring(start, end + 1);
     var emRep = `<img class="message-emote"src="https://static-cdn.jtvnw.net/emoticons/v2/${replacement}/default/dark/3.0"/>`;
     return this.substring(0, start) + emRep + this.substring(end + 1, this.length);
+}
+
+function replaceBTTVAll(msg, channel) {
+    var gotEmotes = [];
+    loadedAssets[channel].emotes.forEach(ele => {
+
+        var regex = new RegExp("(^" + ele.code + "(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])|(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])" + ele.code + "$|\\s" + ele.code + "(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])|(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])" + ele.code + "\\s)", "gm");
+
+        if (ele.type == "bttv") {
+            var m  = msg.match(regex);
+            msg = msg.replace(regex, `<img class="message-emote"src="https://cdn.betterttv.net/emote/${ele.id}/3x"/>`)
+
+            if(m != null && m.length > 0) {
+                var found = false;
+                gotEmotes.forEach(el => {
+                    if(el.code == ele.code) found = true;
+                })
+                if(!found) gotEmotes.push({code: ele.code, img: `https://cdn.betterttv.net/emote/${ele.id}/3x`, type: "bttv"})
+            }
+        } else if (ele.type == "ffz") {
+            var m  = msg.match(regex);
+            var poss = ele.urls[4] != undefined ? ele.urls[4] : ele.urls[2] != undefined ? ele.urls[2] : ele.urls[1];
+            msg = msg.replace(regex, `<img class="message-emote"src="https:${poss}"/>`)
+
+            if(m != null && m.length > 0) {
+                var found = false;
+                gotEmotes.forEach(el => {
+                    if(el.code == ele.code) found = true;
+                })
+                if(!found) gotEmotes.push({code: ele.code, img: `https:${poss}`, type: "ffz"})
+            }
+        }
+    })
+    return gotEmotes;
 }
 
 function replaceBTTV(msg, channel) {
@@ -339,6 +420,10 @@ exports.getLoaded = function (channel) {
         if(found == false) loaded[channel] = null;
         return loaded;
     }
+}
+
+exports.getEmotes = function (message, tags, channel) {
+    return getMessageEmotes(message, tags, channel.replace("#", "").trim().toLowerCase());
 }
 
 exports.replaceEmotes = function (message, tags, channel) {

@@ -1,7 +1,7 @@
 {
   "name": "tmi-emote-parse",
   "version": "1.0.5",
-  "description": "Chat parser for legacy Twitch, BTTV and FFZ emotes aswell as badges using TMI.js",
+  "description": "Chat parser for legacy Twitch, BTTV, FFZ and 7TV emotes aswell as badges using TMI.js",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,6 +15,7 @@
     "badge",
     "bttv",
     "ffz",
+    "7tv",
     "chat",
     "parse"
   ],

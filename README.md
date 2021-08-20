@@ -139,9 +139,12 @@ Load Emotes and Badges of a specific Twitch channel. _(Void)_
 **Parameters:**
 - `channel`: _String_ - Channel name
 - `options`: _Object_ - Load only specific providers [Defaults to loading all] (optional)
+  - `options["bttv"]`: _Boolean_ - Load BetterTTV Emotes
+  - `options["ffz"]`: _Boolean_ - Load FrankerFaceZ Emotes
+  - `options["7tv"]`: _Boolean_ - Load 7TV Emotes
 ```js
 emoteParser.loadAssets("twitch");
-emoteParser.loadAssets("twitchdev", {"bttv": true, "ffz": false, "7tv": false});
+emoteParser.loadAssets("twitchdev", { "bttv": true, "ffz": false, "7tv": false });
 ```
 
 ### emoteParser.getLoaded()
@@ -323,7 +326,7 @@ Returns something like this:
 ## Community
 - Follow [@SmileFXOfficial on Twitter](https://twitter.com/SmileFXOfficial), [SmileFXOfficial on Twitch](https://twitch.tv/SmileFXOfficial).
 - Found a bug: [Submit an issue](https://github.com/smilefx/tmi-emote-parse/issues).
-- Support my work and [buy me a coffee](Ko-fi.com/smilefx).
+- Support my work and [buy me a coffee](https://Ko-fi.com/smilefx).
 - Discussion and news about tmi-emote-parser: [Join the Discord](https://discord.gg/nV6zP6d4Pq).
 
 ## Thanks for using the project! 💜

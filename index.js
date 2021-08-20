@@ -215,41 +215,102 @@ function loadConcurrent(uid, channel, args) {
 
     // NOTE: 7TV
 
-    if (args["7tv"]["channel"] == true) {
-        fetch(`https://api.7tv.app/v2/users/${channel}/emotes`)
+    if (args["7tv"]["channel"] == true || args["7tv"]["global"] == true) {
+        fetch(`https://api.7tv.app/v2/users/${channel}`)
             .then(response => response.json())
             .then(body => {
                 try {
                     if (body.Status == undefined && body.Status != 404) {
-                        body.forEach(ele => {
-                            ele.code = ele.name;
-                            ele.type = "7tv";
-                            loadedAssets[channel].emotes.push(ele);
-                        })
+                        if (args["7tv"]["channel"] == true) {
+                            fetch(`https://api.7tv.app/v2/users/${channel}/emotes`)
+                                .then(response => response.json())
+                                .then(body => {
+                                    try {
+                                        if (body.Status == undefined && body.Status != 404) {
+                                            body.forEach(ele => {
+                                                ele.code = ele.name;
+                                                ele.type = "7tv";
+                                                loadedAssets[channel].emotes.push(ele);
+                                            })
 
-                        checkLoadedAll(channel, "7tv", "channel", true, args);
-                        if (loadedAssets[channel].allLoaded) {
-                            loadedAssets[channel].emotes = loadedAssets[channel].emotes.sort(compareLength);
-                            exports.events.emit('emotes', {
-                                channel: channel
-                            });
+                                            checkLoadedAll(channel, "7tv", "channel", true, args);
+                                            if (loadedAssets[channel].allLoaded) {
+                                                loadedAssets[channel].emotes = loadedAssets[channel].emotes.sort(compareLength);
+                                                exports.events.emit('emotes', {
+                                                    channel: channel
+                                                });
 
-                            if (loadedAssets[channel].badgesLoaded[2]) {
-                                exports.events.emit('loaded', {
-                                    channel: channel
+                                                if (loadedAssets[channel].badgesLoaded[2]) {
+                                                    exports.events.emit('loaded', {
+                                                        channel: channel
+                                                    });
+                                                }
+                                            }
+                                        } else {
+                                            exports.events.emit('error', {
+                                                channel: channel,
+                                                error: "Failed to load 7TV global emotes for " + channel
+                                            });
+
+                                            checkLoadedAll(channel, "7tv", "channel", true, args);
+                                        }
+                                    } catch (error) {
+                                        //console.log(error);
+                                        exports.events.emit('error', {
+                                            channel: channel,
+                                            error: "Failed to load 7TV global emotes for " + channel
+                                        });
+                                    }
                                 });
-                            }
-                        } 
+                        } else {
+                            checkLoadedAll(channel, "7tv", "channel", null, args);
+                        }
+
+                        if (args["7tv"]["global"] == true) {
+                            fetch(`https://api.7tv.app/v2/emotes/global`)
+                                .then(response => response.json())
+                                .then(body => {
+                                    try {
+                                        body.forEach(ele => {
+                                            ele.code = ele.name;
+                                            ele.type = "7tv";
+                                            loadedAssets[channel].emotes.push(ele);
+                                        })
+
+                                        checkLoadedAll(channel, "7tv", "global", true, args);
+                                        if (loadedAssets[channel].allLoaded) {
+                                            loadedAssets[channel].emotes = loadedAssets[channel].emotes.sort(compareLength);
+                                            exports.events.emit('emotes', {
+                                                channel: channel
+                                            });
+
+                                            if (loadedAssets[channel].badgesLoaded[2]) {
+                                                exports.events.emit('loaded', {
+                                                    channel: channel
+                                                });
+                                            }
+                                        }
+                                    } catch (error) {
+                                        //console.log(error);
+                                        exports.events.emit('error', {
+                                            channel: channel,
+                                            error: "Failed to load 7TV channel emotes for " + channel
+                                        });
+                                    }
+                                });
+                        } else {
+                            checkLoadedAll(channel, "7tv", "global", null, args);
+                        }
                     } else {
                         exports.events.emit('error', {
                             channel: channel,
-                            error: "Failed to load 7TV global emotes for " + channel
+                            error: "No 7TV user available for " + channel
                         });
 
                         checkLoadedAll(channel, "7tv", "channel", true, args);
+                        checkLoadedAll(channel, "7tv", "global", true, args);
                     }
                 } catch (error) {
-                    //console.log(error);
                     exports.events.emit('error', {
                         channel: channel,
                         error: "Failed to load 7TV global emotes for " + channel
@@ -258,42 +319,6 @@ function loadConcurrent(uid, channel, args) {
             });
     } else {
         checkLoadedAll(channel, "7tv", "channel", null, args);
-    }
-
-    if (args["7tv"]["global"] == true) {
-        fetch(`https://api.7tv.app/v2/emotes/global`)
-            .then(response => response.json())
-            .then(body => {
-                try {
-                    body.forEach(ele => {
-                        ele.code = ele.name;
-                        ele.type = "7tv";
-                        loadedAssets[channel].emotes.push(ele);
-                    })
-
-                    checkLoadedAll(channel, "7tv", "global", true, args);
-                    if (loadedAssets[channel].allLoaded) {
-                        loadedAssets[channel].emotes = loadedAssets[channel].emotes.sort(compareLength);
-                        exports.events.emit('emotes', {
-                            channel: channel
-                        });
-
-                        if (loadedAssets[channel].badgesLoaded[2]) {
-                            exports.events.emit('loaded', {
-                                channel: channel
-                            });
-                        }
-                    }
-                } catch (error) {
-                    //console.log(error);
-                    exports.events.emit('error', {
-                        channel: channel,
-                        error: "Failed to load 7TV channel emotes for " + channel
-                    });
-                }
-            });
-    } else {
-        checkLoadedAll(channel, "7tv", "global", null, args);
     }
 
     // NOTE: Twitch Badges
@@ -594,7 +619,7 @@ function replaceBTTVAll(msg, channel) {
 }
 
 function replaceBTTV(msg, channel) {
-    if(loadedAssets[channel] == undefined) {
+    if (loadedAssets[channel] == undefined) {
         exports.events.emit('error', {
             channel: channel,
             error: "The channel " + channel + " has not been loaded yet"

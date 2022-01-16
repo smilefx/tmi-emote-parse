@@ -29,7 +29,6 @@ function loadAssets(channel, args) {
             }
         }
     }
-    // console.log(args);
 
     fetch(`https://dadoschyt.de/api/tmt/user/${channel}`)
         .then(response => response.json())

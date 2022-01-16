@@ -1,7 +1,7 @@
-var fetch = require("node-fetch");
-const EventEmitter = require('events');
+// var fetch = require("node-fetch");
+// const EventEmitter = require('events');
 
-class ParseEmitter extends EventEmitter {}
+// class ParseEmitter extends EventEmitter {}
 
 var loadedAssets = {};
 
@@ -552,10 +552,7 @@ function replaceBTTVAll(msg, channel) {
     var gotEmotes = [];
     loadedAssets[channel].emotes.forEach(ele => {
 
-        var code = escapeRegex(ele.code);
-
-        // var regex = new RegExp("(^" + code + "(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])|(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])" + code + "$|\\s" + code + "(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])|(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])" + code + "\\s)", "gm");
-        var regex = new RegExp("(^" + code + "(?=\\s)|(?<=\\s)" + code + "$|(?<=\\s)" + code + "(?=\\s))", "gm");
+        var regex = new RegExp("(^" + ele.code + "(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])|(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])" + ele.code + "$|\\s" + ele.code + "(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])|(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])" + ele.code + "\\s)", "gm");
 
         if (ele.type == "bttv") {
             var m = msg.match(regex);
@@ -630,12 +627,7 @@ function replaceBTTV(msg, channel) {
     } else {
         loadedAssets[channel].emotes.forEach(ele => {
 
-            var code = escapeRegex(ele.code);
-
-            // (^KEKW(?=[?!."_*+#'´`\/%&$€§=\s])|(?<=[?!."_*+#'´`\/%&$€§=\s])KEKW$)|([#*\s]KEKW(?=[?!."_*+#'´`\/%&$€§=\s])|(?<=[?!."_*+#'´`\/%&$€§=\s])KEKW[#*\s])
-            // var regex = new RegExp("(^" + code + "(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])|(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])" + code + "$|\\s" + code + "(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])|(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])" + code + "\\s)", "gm");
-            var regex = new RegExp("(^" + code + "(?=\\s)|(?<=\\s)" + code + "$|(?<=\\s)" + code + "(?=\\s))", "gm");
-            // console.log(regex);
+            var regex = new RegExp("(^" + ele.code + "(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])|(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])" + ele.code + "$|\\s" + ele.code + "(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])|(?=[^\?\!\.\"\_\*\+\#\'\´\`\\\/\%\&\$\€\§\=])" + ele.code + "\\s)", "gm");
 
             if (ele.type == "bttv") {
                 msg = msg.replace(regex, `<img class="message-emote"src="https://cdn.betterttv.net/emote/${ele.id}/3x"/>`)
@@ -649,10 +641,6 @@ function replaceBTTV(msg, channel) {
         })
     }
     return msg;
-}
-
-function escapeRegex(string) {
-    return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
 function getBadges(tags, channel) {
@@ -844,5 +832,12 @@ exports.getAllEmotes = function (channel) {
         return [];
     }
 }
+
+var emoteParse = {
+  loadAssets: loadAssets
+};
+
+module.exports = emoteParse;
+console.log("Test")
 
 exports.events = new ParseEmitter();

@@ -82,7 +82,6 @@ function loadConcurrent(uid, channel, args) {
                     }
 
                 } catch (error) {
-                    //console.log(error);
                     exports.events.emit('error', {
                         channel: channel,
                         error: "Failed to load FFZ channel emotes for " + channel
@@ -122,7 +121,6 @@ function loadConcurrent(uid, channel, args) {
                         }
                     }
                 } catch (error) {
-                    //console.log(error);
                     exports.events.emit('error', {
                         channel: channel,
                         error: "Failed to load FFZ global emotes for " + channel
@@ -166,7 +164,6 @@ function loadConcurrent(uid, channel, args) {
                         }
                     }
                 } catch (error) {
-                    //console.log(error);
                     exports.events.emit('error', {
                         channel: channel,
                         error: "Failed to load BetterTTV channel emotes for " + channel
@@ -201,7 +198,6 @@ function loadConcurrent(uid, channel, args) {
                         }
                     }
                 } catch (error) {
-                    //console.log(error);
                     exports.events.emit('error', {
                         channel: channel,
                         error: "Failed to load BetterTTV global emotes for " + channel
@@ -254,7 +250,6 @@ function loadConcurrent(uid, channel, args) {
                                             checkLoadedAll(channel, "7tv", "channel", true, args);
                                         }
                                     } catch (error) {
-                                        //console.log(error);
                                         exports.events.emit('error', {
                                             channel: channel,
                                             error: "Failed to load 7TV global emotes for " + channel
@@ -290,7 +285,6 @@ function loadConcurrent(uid, channel, args) {
                                             }
                                         }
                                     } catch (error) {
-                                        //console.log(error);
                                         exports.events.emit('error', {
                                             channel: channel,
                                             error: "Failed to load 7TV channel emotes for " + channel
@@ -404,11 +398,9 @@ function checkLoaded(channel) {
 function checkLoadedAll(channel, type, extra, value, args) {
     if (args[type][extra] == false && value == null) {
         loadedAssets[channel].loaded[type][extra] = null;
-        // console.log(`Skipped ${channel}: ${type} - ${extra}`);
     }
     if (args[type][extra] == true && loadedAssets[channel].loaded[type][extra] == false && value == true) {
         loadedAssets[channel].loaded[type][extra] = true;
-        // console.log(`Loaded ${channel}: ${type} - ${extra}`);
     }
 
     var trueVals = [];

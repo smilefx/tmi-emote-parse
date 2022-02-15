@@ -107,7 +107,7 @@ client.on('message', (channel, userstate, message, self) => {
 
     // 🟦 Use the tmi-emote-parse module here
     // Replace Emotes with HTML in a given message for a specific channel
-    console.log(emoteParser.replaceEmotes(channel, userstate, message, self));
+    console.log(emoteParser.replaceEmotes(message, userstate, channel, self));
     /* 
         -> message: 'I can see you ariW' 
         -> output:  'I can see you <img class="message-emote" src="https://cdn.betterttv.net/emote/56fa09f18eff3b595e93ac26/3x"/>'

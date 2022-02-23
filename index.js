@@ -34,7 +34,7 @@ function loadAssets(channel, args) {
         .then(response => response.json())
         .then(body => {
             try {
-                var uid = body.users[0]._id;
+                var uid = body.data[0].id;
 
             } catch (error) {
                 exports.events.emit('error', {

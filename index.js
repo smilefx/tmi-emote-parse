@@ -3,6 +3,8 @@ const EventEmitter = require('events');
 
 class ParseEmitter extends EventEmitter {}
 
+var debug = true; 
+
 var loadedAssets = {};
 
 function loadAssets(channel, args) {
@@ -37,10 +39,13 @@ function loadAssets(channel, args) {
                 var uid = body.data[0].id;
 
             } catch (error) {
-                exports.events.emit('error', {
-                    channel: channel,
-                    error: "Failed to load user information for " + channel
-                });
+                if(debug){
+                   exports.events.emit('error', {
+                        channel: channel,
+                        error: "Failed to load user information for " + channel
+                    }); 
+                }
+                
             } finally {
                 loadedAssets[channel].uid = uid;
                 loadConcurrent(uid, channel, args);
@@ -82,10 +87,13 @@ function loadConcurrent(uid, channel, args) {
                     }
 
                 } catch (error) {
-                    exports.events.emit('error', {
-                        channel: channel,
-                        error: "Failed to load FFZ channel emotes for " + channel
-                    });
+                    if(debug){
+                        exports.events.emit('error', {
+                            channel: channel,
+                            error: "Failed to load FFZ channel emotes for " + channel
+                        });  
+                    }
+                    
                 }
             });
     } else {
@@ -121,10 +129,13 @@ function loadConcurrent(uid, channel, args) {
                         }
                     }
                 } catch (error) {
-                    exports.events.emit('error', {
-                        channel: channel,
-                        error: "Failed to load FFZ global emotes for " + channel
-                    });
+                    if(debug){
+                        exports.events.emit('error', {
+                            channel: channel,
+                            error: "Failed to load FFZ global emotes for " + channel
+                        });   
+                    }
+                   
                 }
 
             });
@@ -164,10 +175,13 @@ function loadConcurrent(uid, channel, args) {
                         }
                     }
                 } catch (error) {
-                    exports.events.emit('error', {
-                        channel: channel,
-                        error: "Failed to load BetterTTV channel emotes for " + channel
-                    });
+                    if(debug){
+                        exports.events.emit('error', {
+                            channel: channel,
+                            error: "Failed to load BetterTTV channel emotes for " + channel
+                        });
+                    }
+                    
                 }
             });
     } else {
@@ -198,10 +212,13 @@ function loadConcurrent(uid, channel, args) {
                         }
                     }
                 } catch (error) {
-                    exports.events.emit('error', {
-                        channel: channel,
-                        error: "Failed to load BetterTTV global emotes for " + channel
-                    });
+                    if(debug){
+                        exports.events.emit('error', {
+                            channel: channel,
+                            error: "Failed to load BetterTTV global emotes for " + channel
+                        });
+                    }
+                    
                 }
             });
     } else {
@@ -242,18 +259,24 @@ function loadConcurrent(uid, channel, args) {
                                                 }
                                             }
                                         } else {
-                                            exports.events.emit('error', {
-                                                channel: channel,
-                                                error: "Failed to load 7TV global emotes for " + channel
-                                            });
+                                            if(debug){
+                                                exports.events.emit('error', {
+                                                    channel: channel,
+                                                    error: "Failed to load 7TV global emotes for " + channel
+                                                });
+                                            }
+                                            
 
                                             checkLoadedAll(channel, "7tv", "channel", true, args);
                                         }
                                     } catch (error) {
-                                        exports.events.emit('error', {
-                                            channel: channel,
-                                            error: "Failed to load 7TV global emotes for " + channel
-                                        });
+                                        if(debug){
+                                            exports.events.emit('error', {
+                                                channel: channel,
+                                                error: "Failed to load 7TV global emotes for " + channel
+                                            }); 
+                                        }
+                                        
                                     }
                                 });
                         } else {
@@ -285,29 +308,38 @@ function loadConcurrent(uid, channel, args) {
                                             }
                                         }
                                     } catch (error) {
-                                        exports.events.emit('error', {
-                                            channel: channel,
-                                            error: "Failed to load 7TV channel emotes for " + channel
-                                        });
+                                        if(debug){
+                                            exports.events.emit('error', {
+                                                channel: channel,
+                                                error: "Failed to load 7TV channel emotes for " + channel
+                                            });
+                                        }
+                                       
                                     }
                                 });
                         } else {
                             checkLoadedAll(channel, "7tv", "global", null, args);
                         }
                     } else {
-                        exports.events.emit('error', {
-                            channel: channel,
-                            error: "No 7TV user available for " + channel
-                        });
+                        if(debug){
+                            exports.events.emit('error', {
+                                channel: channel,
+                                error: "No 7TV user available for " + channel
+                            });
+                        }
+                        
 
                         checkLoadedAll(channel, "7tv", "channel", true, args);
                         checkLoadedAll(channel, "7tv", "global", true, args);
                     }
                 } catch (error) {
-                    exports.events.emit('error', {
-                        channel: channel,
-                        error: "Failed to load 7TV global emotes for " + channel
-                    });
+                    if(debug){
+                        exports.events.emit('error', {
+                            channel: channel,
+                            error: "Failed to load 7TV global emotes for " + channel
+                        });
+                    }
+                    
                 }
             });
     } else {
@@ -344,10 +376,13 @@ function loadConcurrent(uid, channel, args) {
                     }
                 }
             } catch (error) {
-                exports.events.emit('error', {
-                    channel: channel,
-                    error: "Failed to load global badges for " + channel
-                });
+                if(debug){
+                    exports.events.emit('error', {
+                        channel: channel,
+                        error: "Failed to load global badges for " + channel
+                    });
+                }
+                
             }
         });
 
@@ -377,10 +412,13 @@ function loadConcurrent(uid, channel, args) {
                     }
                 }
             } catch (error) {
-                exports.events.emit('error', {
-                    channel: channel,
-                    error: "Failed to load channel badges for " + channel
-                });
+                if(debug){
+                    exports.events.emit('error', {
+                        channel: channel,
+                        error: "Failed to load channel badges for " + channel
+                    });
+                }
+                
             }
         });
 }
@@ -721,6 +759,10 @@ function loadOptions(args) {
         }
     }
     return args;
+}
+
+exports.setDebug = function(value){
+    debug = value; 
 }
 
 exports.loadAssets = function (channel, args) {

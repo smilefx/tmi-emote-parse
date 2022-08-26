@@ -15,18 +15,21 @@ Load and parse Twitch, [BTTV](https://betterttv.com/), [FFZ](https://www.franker
     - [With tmi.js](#with-tmijs)
   - [Documentation](#documentation)
     - [Functions](#functions)
-    - [emoteParser.loadAssets()](#emoteparserloadassets)
-    - [emoteParser.getLoaded()](#emoteparsergetloaded)
-    - [emoteParser.getAllBadges()](#emoteparsergetallbadges)
-    - [emoteParser.getAllEmotes()](#emoteparsergetallemotes)
-    - [emoteParser.getEmotes()](#emoteparsergetemotes)
-    - [emoteParser.getBadges()](#emoteparsergetbadges)
-    - [emoteParser.replaceEmotes()](#emoteparserreplaceemotes)
+      - [emoteParser.setTwitchCredentials() 🆕](#emoteparsersettwitchcredentials)
+      - [emoteParser.loadAssets()](#emoteparserloadassets)
+      - [emoteParser.getLoaded()](#emoteparsergetloaded)
+      - [emoteParser.getLoadedDetailed() 🆕](#emoteparsergetloadeddetailed)
+      - [emoteParser.getAllBadges()](#emoteparsergetallbadges)
+      - [emoteParser.getAllEmotes()](#emoteparsergetallemotes)
+      - [emoteParser.getEmotes()](#emoteparsergetemotes)
+      - [emoteParser.getBadges()](#emoteparsergetbadges)
+      - [emoteParser.replaceEmotes()](#emoteparserreplaceemotes)
+      - [emoteParser.setDebug() 🆕](#emoteparsersetdebug)
     - [Events](#events)
-    - [Emotes](#emotes)
-    - [Badges](#badges)
-    - [Loaded](#loaded)
-    - [Error](#error)
+      - [Emotes](#emotes)
+      - [Badges](#badges)
+      - [Loaded](#loaded)
+      - [Error 🔄](#error)
   - [Community](#community)
   - [Thanks for using the project! 💜](#thanks-for-using-the-project-)
   
@@ -82,6 +85,23 @@ emoteParser.events.on("badges", (event) => {
 // 🟦 Require the Module
 const emoteParser = require("tmi-emote-parse");
 
+
+// 🟦 Set debug state and add event handlers (optional)
+emoteParser.setDebug(true);
+emoteParser.events.on("error", e => {
+    console.log("Error:", e);
+})
+
+
+// 🟦 Register Twitch API credentials (ClientID and OAuth Token) needed for User-ID request
+emoteParser.setTwitchCredentials("<ClientID>", "<OAuth>");
+
+
+// 🟦 Now you can finally load emotes and badges for a specific channel to later parse/use
+emoteParser.loadAssets("twitch");
+emoteParser.loadAssets("twitchdev");
+
+
 // 🅾 The following part is the tmi.js integration
 // (Documentation can be found here: https://github.com/tmijs/tmi.js)
 const tmi = require("tmi.js");
@@ -123,16 +143,22 @@ client.on('message', (channel, userstate, message, self) => {
         }, ...] 
     */
 });
-
-// 🟦 Load emotes and badges for a specific channel to later parse/use
-emoteParser.loadAssets("twitch");
-emoteParser.loadAssets("twitchdev");
 ```
 
 <br>
 
 ## Documentation
 ### Functions
+### emoteParser.setTwitchCredentials()
+Set Twitch API credentials for User-ID requests on the Twitch Helix API endpoint. _(Void)_
+
+**Parameters:**
+- `clientId`: _String_ - Twitch API clientId
+- `oauth`: _String_ - Twitch API OAuth token (matching the clientId)
+```js
+emoteParser.setTwitchCredentials("<ClientID>", "<OAuth>");
+```
+
 ### emoteParser.loadAssets()
 Load Emotes and Badges of a specific Twitch channel. _(Void)_
 
@@ -159,6 +185,21 @@ Returns something like this:
 ```js
 {
   "twitch": { channel: 'twitch', emotes: true, badges: true }
+}
+```
+
+### emoteParser.getLoadedDetailed()
+Check the loaded status of all channels or one specific channel. _(Object)_
+
+**Parameters:**
+- `channel`: _String_ - Channel name (optional)
+```js
+console.log(emoteParser.getLoadedDetailed("twitch"));
+```
+Returns something like this:
+```js
+{
+  "twitch": { channel: 'twitch', emotes: { "all": false, "bttv": { global: true, channel: true }, "ffz": { global: true, channel: true }, "7tv": { global: true, channel: false }}, badges: true }
 }
 ```
 
@@ -254,6 +295,15 @@ Returns something like this:
 'I can see you <img class="message-emote" src="https://cdn.betterttv.net/emote/56fa09f18eff3b595e93ac26/3x"/>'
 ```
 
+### emoteParser.setDebug()
+Switch debug mode on/off - will impact error events (Debug mode default is off). _(Void)_
+
+**Parameters:**
+- `active`: _Boolean_ - Debug mode state to set
+```js
+emoteParser.setDebug(false);
+```
+
 <br>
 
 ### Events
@@ -306,7 +356,7 @@ Returns something like this:
 ```
 
 ### Error
-Event fires if any error on load occurs for any channel. _(Object)_
+Event fires iff debug mode is enabled and any error on load occurs for any channel. _(Object)_
 
 **Parameters:**
 - `event`: _Object_ - Event

@@ -3,7 +3,11 @@ const EventEmitter = require('events');
 
 class ParseEmitter extends EventEmitter {}
 
-var debug = true; 
+var debug = false;
+var credentials = {
+    oauth: "",
+    clientId: ""
+};
 
 var loadedAssets = {};
 
@@ -17,11 +21,11 @@ function loadAssets(channel, args) {
         badgesLoaded: [false, false, false],
         allLoaded: false,
         loaded: {
-            bttv: {
+            "bttv": {
                 global: false,
                 channel: false
             },
-            ffz: {
+            "ffz": {
                 global: false,
                 channel: false
             },
@@ -32,25 +36,53 @@ function loadAssets(channel, args) {
         }
     }
 
-    fetch(`https://dadoschyt.de/api/tmt/user/${channel}`)
-        .then(response => response.json())
-        .then(body => {
-            try {
-                var uid = body.data[0].id;
-
-            } catch (error) {
-                if(debug){
-                   exports.events.emit('error', {
-                        channel: channel,
-                        error: "Failed to load user information for " + channel
-                    }); 
+    if(credentials.oauth != undefined && credentials.oauth != null && credentials.oauth.trim() != "" && credentials.clientId != undefined && credentials.clientId != null && credentials.clientId.trim() != "") {
+        fetch(`https://api.twitch.tv/helix/users?login=${channel}`, {
+                headers: {
+                    'Authorization': "Bearer " + credentials.oauth,
+                    'Client-Id': credentials.clientId
                 }
-                
-            } finally {
-                loadedAssets[channel].uid = uid;
-                loadConcurrent(uid, channel, args);
-            }
-        });
+            })
+            .then(response => response.json())
+            .then(body => {
+                if(body.status == undefined && body.data.length > 0) {
+                    try {
+                        var uid = body.data[0].id;
+                    } catch (error) {
+                        if (debug) {
+                            exports.events.emit('error', {
+                                channel: channel,
+                                error: "Failed to load user information for " + channel
+                            });
+                        }
+                    } finally {
+                        loadedAssets[channel].uid = uid;
+                        loadConcurrent(uid, channel, args);
+                    }
+                } else if(body.status != undefined && body.status == 401) {
+                    if (debug) {
+                        exports.events.emit('error', {
+                            channel: channel,
+                            error: "Twitch API login credentials invalid."
+                        });
+                    }
+                } else {
+                    if (debug) {
+                        exports.events.emit('error', {
+                            channel: channel,
+                            error: "Failed to load user information for " + channel
+                        });
+                    }
+                }
+            });
+    } else {
+        if (debug) {
+            exports.events.emit('error', {
+                channel: channel,
+                error: "Twitch API login credentials not set."
+            });
+        }
+    }
 }
 
 function loadConcurrent(uid, channel, args) {
@@ -87,13 +119,13 @@ function loadConcurrent(uid, channel, args) {
                     }
 
                 } catch (error) {
-                    if(debug){
+                    if (debug) {
                         exports.events.emit('error', {
                             channel: channel,
                             error: "Failed to load FFZ channel emotes for " + channel
-                        });  
+                        });
                     }
-                    
+
                 }
             });
     } else {
@@ -129,13 +161,13 @@ function loadConcurrent(uid, channel, args) {
                         }
                     }
                 } catch (error) {
-                    if(debug){
+                    if (debug) {
                         exports.events.emit('error', {
                             channel: channel,
                             error: "Failed to load FFZ global emotes for " + channel
-                        });   
+                        });
                     }
-                   
+
                 }
 
             });
@@ -175,13 +207,13 @@ function loadConcurrent(uid, channel, args) {
                         }
                     }
                 } catch (error) {
-                    if(debug){
+                    if (debug) {
                         exports.events.emit('error', {
                             channel: channel,
                             error: "Failed to load BetterTTV channel emotes for " + channel
                         });
                     }
-                    
+
                 }
             });
     } else {
@@ -212,13 +244,13 @@ function loadConcurrent(uid, channel, args) {
                         }
                     }
                 } catch (error) {
-                    if(debug){
+                    if (debug) {
                         exports.events.emit('error', {
                             channel: channel,
                             error: "Failed to load BetterTTV global emotes for " + channel
                         });
                     }
-                    
+
                 }
             });
     } else {
@@ -259,24 +291,24 @@ function loadConcurrent(uid, channel, args) {
                                                 }
                                             }
                                         } else {
-                                            if(debug){
+                                            if (debug) {
                                                 exports.events.emit('error', {
                                                     channel: channel,
-                                                    error: "Failed to load 7TV global emotes for " + channel
+                                                    error: "Failed to load 7TV channel emotes for " + channel
                                                 });
                                             }
-                                            
+
 
                                             checkLoadedAll(channel, "7tv", "channel", true, args);
                                         }
                                     } catch (error) {
-                                        if(debug){
+                                        if (debug) {
                                             exports.events.emit('error', {
                                                 channel: channel,
-                                                error: "Failed to load 7TV global emotes for " + channel
-                                            }); 
+                                                error: "Failed to load 7TV channel emotes for " + channel
+                                            });
                                         }
-                                        
+
                                     }
                                 });
                         } else {
@@ -308,38 +340,38 @@ function loadConcurrent(uid, channel, args) {
                                             }
                                         }
                                     } catch (error) {
-                                        if(debug){
+                                        if (debug) {
                                             exports.events.emit('error', {
                                                 channel: channel,
-                                                error: "Failed to load 7TV channel emotes for " + channel
+                                                error: "Failed to load 7TV global emotes for " + channel
                                             });
                                         }
-                                       
+
                                     }
                                 });
                         } else {
                             checkLoadedAll(channel, "7tv", "global", null, args);
                         }
                     } else {
-                        if(debug){
+                        if (debug) {
                             exports.events.emit('error', {
                                 channel: channel,
                                 error: "No 7TV user available for " + channel
                             });
                         }
-                        
+
 
                         checkLoadedAll(channel, "7tv", "channel", true, args);
                         checkLoadedAll(channel, "7tv", "global", true, args);
                     }
                 } catch (error) {
-                    if(debug){
+                    if (debug) {
                         exports.events.emit('error', {
                             channel: channel,
                             error: "Failed to load 7TV global emotes for " + channel
                         });
                     }
-                    
+
                 }
             });
     } else {
@@ -376,13 +408,13 @@ function loadConcurrent(uid, channel, args) {
                     }
                 }
             } catch (error) {
-                if(debug){
+                if (debug) {
                     exports.events.emit('error', {
                         channel: channel,
                         error: "Failed to load global badges for " + channel
                     });
                 }
-                
+
             }
         });
 
@@ -412,13 +444,12 @@ function loadConcurrent(uid, channel, args) {
                     }
                 }
             } catch (error) {
-                if(debug){
+                if (debug) {
                     exports.events.emit('error', {
                         channel: channel,
                         error: "Failed to load channel badges for " + channel
                     });
                 }
-                
             }
         });
 }
@@ -648,7 +679,7 @@ function replaceBTTVAll(msg, channel) {
 }
 
 function replaceBTTV(msg, channel) {
-    if (loadedAssets[channel] == undefined) {
+    if (loadedAssets[channel] == undefined && debug) {
         exports.events.emit('error', {
             channel: channel,
             error: "The channel " + channel + " has not been loaded yet"
@@ -761,8 +792,15 @@ function loadOptions(args) {
     return args;
 }
 
-exports.setDebug = function(value){
-    debug = value; 
+exports.setTwitchCredentials = function (clientId, oauth) {
+    if(clientId != undefined && oauth != undefined) {
+        credentials.clientId = clientId.trim();
+        credentials.oauth = oauth.toLowerCase().startsWith("oauth:") ? oauth.replace(/oauth:/i, "") : oauth;
+    }
+}
+
+exports.setDebug = function (active) {
+    debug = active;
 }
 
 exports.loadAssets = function (channel, args) {
@@ -794,6 +832,40 @@ exports.getLoaded = function (channel) {
                 var ele = loadedAssets[el];
                 loaded[el].channel = el;
                 loaded[el].emotes = ele.allLoaded;
+                loaded[el].badges = !ele.badgesLoaded.includes(false);
+            }
+        })
+        if (found == false) loaded[channel] = null;
+        return loaded;
+    }
+}
+
+exports.getLoadedDetailed = function (channel) {
+    if (channel == undefined) {
+        var loaded = {};
+        Object.keys(loadedAssets).forEach(el => {
+            loaded[el] = {};
+            var ele = loadedAssets[el];
+            loaded[el].channel = el;
+            loaded[el].emotes = ele.loaded;
+            loaded[el].emotes["all"] = ele.allLoaded; 
+            loaded[el].badges = !ele.badgesLoaded.includes(false);
+        })
+        return loaded;
+    } else {
+        channel = channel.replace("#", "").trim().toLowerCase();
+        var loaded = {
+
+        };
+        var found = false;
+        Object.keys(loadedAssets).forEach(el => {
+            if (el == channel) {
+                found = true;
+                loaded[el] = {};
+                var ele = loadedAssets[el];
+                loaded[el].channel = el;
+                loaded[el].emotes = ele.loaded;
+                loaded[el].emotes["all"] = ele.allLoaded; 
                 loaded[el].badges = !ele.badgesLoaded.includes(false);
             }
         })

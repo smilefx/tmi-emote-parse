@@ -49,7 +49,19 @@ npm install tmi-emote-parse
 // 🟦 Require the Module
 const emoteParser = require("tmi-emote-parse");
 
-// 🟦 Load emotes and badges for a specific channel to later use
+
+// 🟦 Set debug state and add event handlers (optional)
+emoteParser.setDebug(true);
+emoteParser.events.on("error", e => {
+    console.log("Error:", e);
+})
+
+
+// 🟦 Register Twitch API credentials (ClientID and OAuth Token) needed for User-ID request
+emoteParser.setTwitchCredentials("<ClientID>", "<OAuth>");
+
+
+// 🟦 Now you can finally load emotes and badges for a specific channel to later parse/use
 emoteParser.loadAssets("twitch");
 emoteParser.loadAssets("twitchdev");
 
@@ -121,6 +133,7 @@ client = new tmi.Client({
     channels: [ '#twitch', '#twitchdev' ] /* Channels to join with leading '#' */
 });
 client.connect().catch(console.error);
+
 
 // 🅾 tmi.js message event handler (as of tmi.js v1.4.2)
 client.on('message', (channel, userstate, message, self) => {

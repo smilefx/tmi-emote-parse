@@ -390,6 +390,5 @@ Returns something like this:
 - Follow [@SmileFXOfficial on Twitter](https://twitter.com/SmileFXOfficial), [SmileFXOfficial on Twitch](https://twitch.tv/SmileFXOfficial).
 - Found a bug: [Submit an issue](https://github.com/smilefx/tmi-emote-parse/issues).
 - Support my work and [buy me a coffee](https://Ko-fi.com/smilefx).
-- Discussion and news about tmi-emote-parser: [Join the Discord](https://discord.gg/nV6zP6d4Pq).
 
 ## Thanks for using the project! 💜
